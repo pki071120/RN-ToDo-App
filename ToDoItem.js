@@ -12,7 +12,7 @@ import { Fontisto, FontAwesome, Feather } from "@expo/vector-icons";
 import { theme } from "./color";
 
 const ToDoItem = ({ todoKey, toDos, setTodos, saveToDos, deleteTodo }) => {
-	const [newText, setNewText] = useState("");
+	const [newText, setNewText] = useState(toDos[todoKey].text);
 	const [updateMode, setUpdateMode] = useState(false);
 
 	const completeTodo = (key) => {
@@ -26,7 +26,6 @@ const ToDoItem = ({ todoKey, toDos, setTodos, saveToDos, deleteTodo }) => {
 		const newToDos = { ...toDos };
 		newToDos[key].text = newText;
 		setUpdateMode(false);
-		setNewText("");
 		setTodos(newToDos);
 		saveToDos(newToDos);
 	};
@@ -34,13 +33,6 @@ const ToDoItem = ({ todoKey, toDos, setTodos, saveToDos, deleteTodo }) => {
 	return (
 		<View key={todoKey} style={styles.toDo}>
 			<View style={styles.toDoTextContainer}>
-				<Pressable onPress={() => completeTodo(todoKey)}>
-					<Feather
-						name={toDos[todoKey].completed ? "check-square" : "square"}
-						size={22}
-						color="white"
-					/>
-				</Pressable>
 				{updateMode ? (
 					<TextInput
 						style={styles.toDoInput}
@@ -54,17 +46,26 @@ const ToDoItem = ({ todoKey, toDos, setTodos, saveToDos, deleteTodo }) => {
 						onSubmitEditing={() => updateTodo(todoKey)}
 					/>
 				) : (
-					<Text
-						style={{
-							...styles.toDoText,
-							textDecorationLine: toDos[todoKey].completed
-								? "line-through"
-								: "none",
-							color: toDos[todoKey].completed ? theme.toDoBg : "white",
-						}}
-					>
-						{toDos[todoKey].text}
-					</Text>
+					<>
+						<Pressable onPress={() => completeTodo(todoKey)}>
+							<Feather
+								name={toDos[todoKey].completed ? "check-square" : "square"}
+								size={22}
+								color="white"
+							/>
+						</Pressable>
+						<Text
+							style={{
+								...styles.toDoText,
+								textDecorationLine: toDos[todoKey].completed
+									? "line-through"
+									: "none",
+								color: toDos[todoKey].completed ? theme.toDoBg : "white",
+							}}
+						>
+							{toDos[todoKey].text}
+						</Text>
+					</>
 				)}
 			</View>
 			<View style={styles.actions}>
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
 	},
 	toDoInput: {
 		fontSize: 16,
-		color: "white",
+		color: "grey",
 	},
 	actions: {
 		flexDirection: "row",
