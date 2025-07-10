@@ -8,11 +8,12 @@ import {
 	ScrollView,
 	ActivityIndicator,
 	Alert,
+	Pressable,
 } from "react-native";
 import { theme } from "./color";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Fontisto } from "@expo/vector-icons";
+import { Fontisto, FontAwesome, Feather } from "@expo/vector-icons";
 
 const STORAGE_KEY = "@toDos";
 const WORKING_KEY = "@working";
@@ -65,7 +66,10 @@ export default function App() {
 
 	const addTodo = async () => {
 		if (!text) return;
-		const newTodo = { ...toDos, [Date.now()]: { text, work: working } };
+		const newTodo = {
+			...toDos,
+			[Date.now()]: { text, work: working, completed: false },
+		};
 		setTodos(newTodo);
 		await saveToDos(newTodo);
 		setText("");
@@ -85,6 +89,13 @@ export default function App() {
 				},
 			},
 		]);
+	};
+
+	const completeTodo = (key) => {
+		const newToDos = { ...toDos };
+		newToDos[key].completed = !newToDos[key].completed;
+		setTodos(newToDos);
+		saveToDos(newToDos);
 	};
 
 	useEffect(() => {
@@ -126,10 +137,36 @@ export default function App() {
 					Object.keys(toDos).map((key) =>
 						toDos[key].work === working ? (
 							<View key={key} style={styles.toDo}>
-								<Text style={styles.toDoText}>{toDos[key].text}</Text>
-								<TouchableOpacity onPress={() => deleteTodo(key)}>
-									<Fontisto name="trash" size={20} color={theme.toDoBg} />
-								</TouchableOpacity>
+								<Pressable onPress={() => completeTodo(key)}>
+									<Feather
+										name={toDos[key].completed ? "check-square" : "square"}
+										size={24}
+										color="white"
+									/>
+								</Pressable>
+								<Text
+									style={{
+										...styles.toDoText,
+										textDecorationLine: toDos[key].completed
+											? "line-through"
+											: "none",
+										color: toDos[key].completed ? theme.toDoBg : "white",
+									}}
+								>
+									{toDos[key].text}
+								</Text>
+								<View style={styles.actions}>
+									<TouchableOpacity>
+										<FontAwesome
+											name="pencil-square-o"
+											size={22}
+											color={theme.toDoBg}
+										/>
+									</TouchableOpacity>
+									<TouchableOpacity onPress={() => deleteTodo(key)}>
+										<Fontisto name="trash" size={20} color={theme.toDoBg} />
+									</TouchableOpacity>
+								</View>
 							</View>
 						) : null
 					)
@@ -179,8 +216,12 @@ const styles = StyleSheet.create({
 	},
 
 	toDoText: {
-		color: "white",
 		fontSize: 16,
-		fontWeight: "500",
+		fontWeight: "800",
+	},
+
+	actions: {
+		flexDirection: "row",
+		gap: 15,
 	},
 });
