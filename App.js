@@ -8,12 +8,11 @@ import {
 	ScrollView,
 	ActivityIndicator,
 	Alert,
-	Pressable,
 } from "react-native";
 import { theme } from "./color";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Fontisto, FontAwesome, Feather } from "@expo/vector-icons";
+import ToDoItem from "./ToDoItem";
 
 const STORAGE_KEY = "@toDos";
 const WORKING_KEY = "@working";
@@ -91,17 +90,11 @@ export default function App() {
 		]);
 	};
 
-	const completeTodo = (key) => {
-		const newToDos = { ...toDos };
-		newToDos[key].completed = !newToDos[key].completed;
-		setTodos(newToDos);
-		saveToDos(newToDos);
-	};
-
 	useEffect(() => {
 		loadToDos();
 		loadMode();
 	}, []);
+
 	return (
 		<View style={styles.container}>
 			<StatusBar style="auto" />
@@ -136,38 +129,14 @@ export default function App() {
 				) : (
 					Object.keys(toDos).map((key) =>
 						toDos[key].work === working ? (
-							<View key={key} style={styles.toDo}>
-								<Pressable onPress={() => completeTodo(key)}>
-									<Feather
-										name={toDos[key].completed ? "check-square" : "square"}
-										size={24}
-										color="white"
-									/>
-								</Pressable>
-								<Text
-									style={{
-										...styles.toDoText,
-										textDecorationLine: toDos[key].completed
-											? "line-through"
-											: "none",
-										color: toDos[key].completed ? theme.toDoBg : "white",
-									}}
-								>
-									{toDos[key].text}
-								</Text>
-								<View style={styles.actions}>
-									<TouchableOpacity>
-										<FontAwesome
-											name="pencil-square-o"
-											size={22}
-											color={theme.toDoBg}
-										/>
-									</TouchableOpacity>
-									<TouchableOpacity onPress={() => deleteTodo(key)}>
-										<Fontisto name="trash" size={20} color={theme.toDoBg} />
-									</TouchableOpacity>
-								</View>
-							</View>
+							<ToDoItem
+								todoKey={key}
+								key={key}
+								toDos={toDos}
+								setTodos={setTodos}
+								saveToDos={saveToDos}
+								deleteTodo={deleteTodo}
+							/>
 						) : null
 					)
 				)}
@@ -202,26 +171,5 @@ const styles = StyleSheet.create({
 		borderRadius: 30,
 		marginVertical: 20,
 		fontSize: 18,
-	},
-
-	toDo: {
-		backgroundColor: theme.grey,
-		marginBottom: 10,
-		paddingVertical: 20,
-		paddingHorizontal: 20,
-		borderRadius: 15,
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "space-between",
-	},
-
-	toDoText: {
-		fontSize: 16,
-		fontWeight: "800",
-	},
-
-	actions: {
-		flexDirection: "row",
-		gap: 15,
 	},
 });
