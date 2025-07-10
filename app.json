@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "TodoApp",
-    "slug": "TodoApp",
+    "slug": "todo-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,6 +24,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "50fd7bb1-b0b8-4b89-8f06-4695a0a27b7f"
+      }
+    },
+    "owner": "pppark"
   }
 }
